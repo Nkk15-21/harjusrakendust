@@ -104,7 +104,7 @@ Object.entries(json).forEach((item) => {
     console.log(item[0]);
     
 })
-console.log('------------');
+console.log('\n------Harjutused: Massivid, Array------');
 
 //1. Harjutus
 console.log('1. Harjutus')
@@ -242,3 +242,35 @@ console.log('\n--- Проверка исходных массивов ---');
 console.log('juurviljad:', juurviljad);
 console.log('puuviljad:', puuviljad);
 console.log('marjad:', marjad);
+
+
+
+console.log("\n----Harjutused: JSON objekt ja JSON andmestruktuur, Rekursioon----")
+
+//1. Harjutus
+console.log("1. Harjutus")
+
+const kasutajaProfiil = {
+
+    // 1. Имя пользователя (Kasutaja nimi)
+    "Kasutaja nimi": "Jane Doe",
+
+    // 2. Возраст (Vanus)
+    vanus: 28,
+
+    // 3. В сети (On-line)
+    "On-line": true,
+
+    // 4. Метод приветствия (Tervitusmeetod)
+    tervitusmeetod: function() {
+        return "Tere!";
+    }
+
+};
+
+// Проверка (опционально)
+console.log(kasutajaProfiil);
+console.log("Имя:", kasutajaProfiil["Kasutaja nimi"]);
+console.log("Возраст:", kasutajaProfiil.vanus);
+console.log("Приветствие:", kasutajaProfiil.tervitusmeetod());
+
