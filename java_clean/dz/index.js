@@ -241,11 +241,8 @@ function sügavPuhastus(element) {
 
     if (elementType === 'object' && element !== null) {
         const uusObjekt = {};
-
         for (const key in element) {
-            // Проверка, чтобы избежать унаследованных свойств
             if (element.hasOwnProperty(key)) {
-                // Рекурсивный вызов для значения
                 uusObjekt[key] = sügavPuhastus(element[key]);
             }
         }
@@ -292,3 +289,65 @@ console.log(puhastatudAndmed); // Функции заменены их резу�
 console.log('\n--- JSON-строка (для подтверждения сериализации) ---');
 console.log(JSON.stringify(puhastatudAndmed, null, 2));
 
+
+//4. Harjutus
+console.log("4. Harjutus")
+
+function sügavPuhastus1(element) {
+    const elementType = typeof element;
+
+    if (element === null || elementType !== 'object') {
+        if (elementType === 'function') {
+            return element();
+        }
+        return element;
+    }
+
+    // 2. СЛУЧАЙ МАССИВА:
+    if (Array.isArray(element)) {
+        // Рекурсивно обрабатываем каждый элемент массива
+        return element.map(item => sügavPuhastus1(item));
+    }
+
+    // 3. СЛУЧАЙ ОБЪЕКТА:
+    if (elementType === 'object') {
+        const uusObjekt = {};
+        for (const key in element) {
+            if (element.hasOwnProperty(key)) {
+                const value = element[key];
+                if (typeof value === 'function') {
+                    uusObjekt[key] = value.call(element); // <--- Реализация п. 2
+                } else {
+
+                    uusObjekt[key] = sügavPuhastus1(value);
+                }
+            }
+        }
+        return uusObjekt;
+    }
+
+    return element;
+}
+
+const investeeringuAndmed = {
+    "täht": "GOOGL",
+    "aktsiaid": 100,
+    "hind": 150.50,
+    // Эта функция использует 'this.aktsiaid' и 'this.hind'
+    arvutaVäärtus1: function() {
+        return this.aktsiaid * this.hind; // 100 * 150.50 = 15050
+    },
+    pesastatud: {
+        "maksuMäär": 0.1,
+        // Эта функция использует 'this.maksuMäär'
+        saaMaks: function() {
+            return this.maksuMäär; // 0.1
+        }
+    }
+};
+
+const puhastatudAndmed = sügavPuhastus1(investeeringuAndmed);
+
+console.log('--- Ожидаемый вывод ---');
+console.log(puhastatudAndmed);
+console.log(JSON.stringify(puhastatudAndmed, null, 2));
