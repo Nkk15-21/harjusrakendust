@@ -1,109 +1,4 @@
 
-let x = 10
-//          0   1   2       3
-let arr = ['a', 1, true, undefined]
-let arr2 = [
-    ['a','b'],
-    [1, [true, false]],
-]
-console.log(arr2[1][1][0]);
-console.log('------------');
-let json = {
-    name: 'vladimir',
-    type:{
-            color: "red",
-            width: 10,
-            count: {
-                type: 1
-            },
-        sum: function(x,y){
-            return x+y;
-        },
-        calc2: () => '10'
-    }
-}
-
-let json2 = [
-    {
-        name: "vladimir1",
-        // [    "vladimir",'vladimirovich',"putin"],
-        type:{
-                color: "red",
-                width: 10,
-                count: {
-                    type: 1
-                },
-            sum: function(x,y){
-                return x+y;
-            },
-            calc2: () => '10'
-        }
-    },
-    {
-        name: "vladimir2",
-        // [    "vladimir",'vladimirovich',"putin"],
-        type:{
-                color: "red",
-                width: 10,
-                count: {
-                    type: 1
-                },
-            sum: function(x,y){
-                return x+y;
-            },
-            calc2: () => '10'
-        }
-    },
-    
-]
-
-json2.forEach(item => {
-    console.log(item.name);
-})
-
-console.log(JSON.stringify(json2));
-
-let tJson = '[{"name":"vladimir1","type":{"color":"red","width":10,"count":{"type":1}}},{"name":"vladimir2","type":{"color":"red","width":10,"count":{"type":1}}}]'
-console.log(JSON.parse(tJson));
-
-console.log('------------');
-console.log(typeof json);
-console.log('------------');
-console.log(json.name)
-console.log('------------');
-console.log(json.name);
-console.log('------------');
-console.log(json.type.color)
-console.log('------------');
-console.log(json.type.sum(5,15))
-console.log('------------');
-console.log(json.type.calc2())
-console.log('------------');
-json.name = "vladimir2";
-console.log(json.name)
-console.log('------------');
-for (let index = 0; index < arr.length; index++) {
-    const element = arr[index];
-    console.log(element)
-}
-let newArr = Object.entries(json)
-console.log(newArr[1])
-console.log('------------');
-let arrValues = Object.values(json)
-console.log("value:", arrValues[1].color)
-console.log('------------');
-let subQuery = Object.values(arrValues[1])
-console.log(subQuery[1])
-console.log('------------');
-let arrKeys = Object.keys(json);
-console.log(arrKeys[1])
-
-console.log('------------');
-
-Object.entries(json).forEach((item) => {
-    console.log(item[0]);
-    
-})
 console.log('\n------Harjutused: Massivid, Array------');
 
 //1. Harjutus
@@ -273,4 +168,127 @@ console.log(kasutajaProfiil);
 console.log("Имя:", kasutajaProfiil["Kasutaja nimi"]);
 console.log("Возраст:", kasutajaProfiil.vanus);
 console.log("Приветствие:", kasutajaProfiil.tervitusmeetod());
+
+// 2. Harjutus
+console.log("2. Harjutus")
+function valmistaJSONiks(obj) {
+    // Инициализируем новый объект, куда будем сохранять преобразованные данные (п. 5)
+    const uusObjekt = {};
+
+    // (Проходим по всем ключам входного объекта)
+    for (const key in obj) {
+        // Проверка, чтобы избежать унаследованных свойств
+        if (obj.hasOwnProperty(key)) {
+            const value = obj[key];
+
+            if (typeof value === 'function') {
+                // Вызываем функцию и сохраняем ее результат в новом объекте.
+                try {
+                    uusObjekt[key] = value();
+                } catch (e) {
+                    // Обработка ошибок, если функция вызывает исключение
+                    console.error(`Ошибка при вызове функции '${key}':`, e);
+                    uusObjekt[key] = undefined;
+                }
+            } else {
+                // Копируем значение как есть.
+                uusObjekt[key] = value;
+            }
+        }
+    }
+    return uusObjekt;
+}
+
+
+const projektiSeisund = {
+    projektiNimi: "Fusion Core",
+    versioon: 3.1,
+    valmimiseAeg: () => "Q3 2026",      // Будет вызвана
+    onEelarveÜle: () => false,          // Будет вызвана
+    arvutaKulu: () => 150000,           // Будет вызвана
+    metaAndmed: { osalejad: 5 }         // Объект - просто скопируется
+};
+
+const jsonValmisObjekt = valmistaJSONiks(projektiSeisund);
+
+console.log('--- Исходный объект ---');
+console.log(projektiSeisund);
+
+console.log('\n--- Преобразованный объект (JSON-ready) ---');
+console.log(jsonValmisObjekt);
+
+console.log('\n--- JSON-строка ---');
+console.log(JSON.stringify(jsonValmisObjekt, null, 2));
+
+
+//3. Harjutus
+console.log("3. Harjutus")
+
+function sügavPuhastus(element) {
+    const elementType = typeof element;
+
+    if (elementType === 'function') {
+        return element(); // Вызываем функцию
+    }
+
+    if (element === null || elementType !== 'object') {
+        return element;
+    }
+
+    if (Array.isArray(element)) {
+        return element.map(item => sügavPuhastus(item));
+    }
+
+    if (elementType === 'object' && element !== null) {
+        const uusObjekt = {};
+
+        for (const key in element) {
+            // Проверка, чтобы избежать унаследованных свойств
+            if (element.hasOwnProperty(key)) {
+                // Рекурсивный вызов для значения
+                uusObjekt[key] = sügavPuhastus(element[key]);
+            }
+        }
+        return uusObjekt;
+    }
+
+    // Возвращаем элемент без изменений, если он не попал ни под один случай (например, Date, RegExp)
+    return element;
+}
+
+const kasuatajaAndmed = {
+    kasutajaNimi: "dinanath50",
+    // Функция 1 на верхнем уровне
+    saaRoll: () => "Administraator",
+    seaded: {
+        teema: "tume",
+        eelistused: [ // Массив
+            {
+                id: 1,
+                // Функция 2 внутри объекта в массиве
+                väärtus: () => true
+            },
+            {
+                id: 2,
+                väärtus: "teavitused_sees" // Примитив
+            }
+        ]
+    },
+    // Функция 3, возвращающая массив объектов
+    saaSisselogimiseAjalugu: () => ([
+        { aeg: "10:00" },
+        { aeg: "14:00" }
+    ])
+};
+
+const puhastatudAndmed = sügavPuhastus(kasuatajaAndmed);
+
+console.log('--- Исходные данные (содержат функции) ---');
+console.log(kasuatajaAndmed);
+
+console.log('\n--- Очищенные данные (JSON-ready) ---');
+console.log(puhastatudAndmed); // Функции заменены их результатами
+
+console.log('\n--- JSON-строка (для подтверждения сериализации) ---');
+console.log(JSON.stringify(puhastatudAndmed, null, 2));
 
